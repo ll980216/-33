@@ -53,17 +53,19 @@ export default {
     // duration 展示时长，为0会一直展示，登陆状态和此项互斥，显示其一
     async onSubmit() {
       // 登陆前提示
-      // this.$toast.loading({
-      //   message: '加载中...',
-      //   forbidClick: true,
-      //   duration: 0
-      // })
+      this.$toast.loading({
+        message: '加载中...',
+        forbidClick: true,
+        duration: 0
+      })
       this.loading()
       // 登陆
       try {
         const { data } = await login(this.mobile, this.code)
+        console.log(data)
         // token存进vuex
         this.SET_TOKEN(data.data)
+        // this.$store.commit('SET_TOKEN', data.data)
         this.$router.push({
           path: '/profile'
         })
@@ -81,7 +83,7 @@ export default {
           this.$toast.fail(error.response.data.message)
         } else {
           // js导致的错  507
-          console.dir(error)
+          // console.dir(error)
           this.$toast.clear()
           // throw error
         }

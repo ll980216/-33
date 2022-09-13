@@ -11,8 +11,12 @@
   <van-tab :title="item.name" v-for="item in channels" :key="item.id">
     <ArtcleList :id="item.id"></ArtcleList>
   </van-tab>
-  <span class="toutiao toutiao-gengduo"></span>
+  <span class="toutiao toutiao-gengduo" @click="isShow = true"></span>
 </van-tabs>
+<!-- close-icon-position="top-left"关闭的icon位置左上方 -->
+<van-popup v-model="isShow" position="bottom" :style="{height: '100%'}" closeable close-icon-position="top-left">
+  <ChennlEdit :myChannels="channels" @chang-active='[(isShow = false),(active = $event)]'></ChennlEdit>
+</van-popup>
   </div>
 </template>
 
@@ -22,14 +26,17 @@
 
 import { getChannelAPI } from '@/api'
 import ArtcleList from '@/views/home/components/ArtcleList.vue'
+import ChennlEdit from '@/views/home/components/ChennlEdit.vue'
 export default {
   components: {
-    ArtcleList
+    ArtcleList,
+    ChennlEdit
   },
   data() {
     return {
       active: 0,
-      channels: []
+      channels: [],
+      isShow: false
     }
   },
   created() {
