@@ -20,7 +20,7 @@
 <!-- 频道 -->
 <div class="recommend-pannel">
     <van-grid :column-num="4" gutter="10" :border="false">
-  <van-grid-item v-for="item in recommendChannels" :key="item.id" :text="item.name" icon="plus">
+  <van-grid-item v-for="item in recommendChannels" :key="item.id" :text="item.name" icon="plus" @click="$emit('add-channel', item)">
 </van-grid-item>
 </van-grid>
 </div>
@@ -45,9 +45,10 @@ export default {
       // console.log(data)
       this.allChannel = data.data.channels
     },
-    handleMychannel({ name }, index) {
+    handleMychannel({ name, id }, index) {
       if (this.isEdit && name !== '推荐') {
-        console.log('删除', name)
+        console.log(id)
+        this.$emit('del-channel', id)
       } else {
         // 删除频道
         // 切换频道

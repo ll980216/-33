@@ -23,13 +23,14 @@ export default new Vuex.Store({
     // storage: window.sessionStorage,
     reducer(state) {
       // return {} 指定state里面的tokenobj数据
-      const { tokenObj } = state
-      return { tokenObj }
+      const { tokenObj, myChannels } = state
+      return { tokenObj, myChannels }
     }
   })],
   state: {
     // tokenObj: JSON.parent( window.localStorage.setItem('SET_TOKEN', JSON.stringify(token)))
-    tokenObj: {}
+    tokenObj: {},
+    myChannels: []
   },
 
   getters: {
@@ -43,6 +44,12 @@ export default new Vuex.Store({
       // 将token存在vuex中
       state.tokenObj = token
       // window.localStorage.setItem('SET_TOKEN', JSON.stringify(token))
+    },
+    /**
+     * @param {*} channels 删除或添加后最新的频道数组
+     */
+    SET_MY_CHANNELS(state, channels) {
+      state.myChannels = channels
     }
   },
   actions: {},

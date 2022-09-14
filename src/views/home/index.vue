@@ -15,7 +15,7 @@
 </van-tabs>
 <!-- close-icon-position="top-left"关闭的icon位置左上方 -->
 <van-popup v-model="isShow" position="bottom" :style="{height: '100%'}" closeable close-icon-position="top-left">
-  <ChennlEdit :myChannels="channels" @chang-active='[(isShow = false),(active = $event)]'></ChennlEdit>
+  <ChennlEdit :myChannels="channels" @chang-active='[(isShow = false),(active = $event)]' @del-channel = 'delChannel' @add-channel = 'addChannel'></ChennlEdit>
 </van-popup>
   </div>
 </template>
@@ -24,9 +24,10 @@
 // ? 空值合并运算符： ?? ===>相当于 || 常用于语句
 // ? 可选链操作符：   ?  ===>前面是undefined,那么不会往后取值
 
-import { getChannelAPI } from '@/api'
+import { getChannelAPI, delChannelAPI, addChannelAPI } from '@/api'
 import ArtcleList from '@/views/home/components/ArtcleList.vue'
 import ChennlEdit from '@/views/home/components/ChennlEdit.vue'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   components: {
     ArtcleList,
@@ -40,9 +41,25 @@ export default {
     }
   },
   created() {
-    this.getChannel()
+    this.initChannels()
+  },
+  computed: {
+    ...mapGetters(['islogin'])
   },
   methods: {
+    ...mapMutations(['SET_MY_CHANNELS']),
+    initChannels() {
+      if (this.islogin) {
+        this.getChannel()
+      } else {
+        const myChannels = this.$store.state.myChannels
+        if (myChannels.length === 0) {
+          this.getChannel()
+        } else {
+          this.channels = myChannels
+        }
+      }
+    },
     async getChannel() {
       try {
         const { data } = await getChannelAPI()
@@ -57,6 +74,46 @@ export default {
           const status = error.respone.status
           // status === 507 && this.$toast.fail('服务器异常，请刷新')
           status === 507 && this.$toast.fail('服务器异常，请刷新')
+        }
+      }
+    },
+    async delChannel (id) {
+      try {
+        const newChannels = this.channels.filter(item => item.id !== id)
+        if (this.islogin) {
+          await delChannelAPI(id)
+        } else {
+          // 把我的频道存在本地
+          this.SET_MY_CHANNELS(newChannels)
+        }
+        // 把视图层删除频道
+        this.channels = newChannels
+        this.$toast.success('删除频道成功~')
+      } catch (error) {
+        if (error.respone && error.respone.status === 401) {
+          this.$toast.fail('请登录再删除~')
+        } else {
+          throw error
+        }
+      }
+    },
+    async addChannel (channel) {
+      try {
+        // 先发送请求
+        if (this.islogin) {
+          await addChannelAPI(channel.id, this.channels.length)
+        } else {
+          //
+          this.SET_MY_CHANNELS([...this.channels, channel])
+        }
+        // 渲染
+        this.channels.push(channel)
+        this.$toast.success('添加频道成功~')
+      } catch (error) {
+        if (error.respone && error.respone.status === 401) {
+          this.$toast.fail('请登录再添加~')
+        } else {
+          throw error
         }
       }
     }
