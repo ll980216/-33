@@ -23,14 +23,16 @@ export default new Vuex.Store({
     // storage: window.sessionStorage,
     reducer(state) {
       // return {} 指定state里面的tokenobj数据
-      const { tokenObj, myChannels } = state
-      return { tokenObj, myChannels }
+      // 放置数据刷新失败 放置在插件中持久化
+      const { tokenObj, myChannels, histories } = state
+      return { tokenObj, myChannels, histories }
     }
   })],
   state: {
     // tokenObj: JSON.parent( window.localStorage.setItem('SET_TOKEN', JSON.stringify(token)))
     tokenObj: {},
-    myChannels: []
+    myChannels: [],
+    histories: []
   },
 
   getters: {
@@ -50,6 +52,14 @@ export default new Vuex.Store({
      */
     SET_MY_CHANNELS(state, channels) {
       state.myChannels = channels
+    },
+    /**
+     *
+     * @param {*} state
+     * @param {*} histories 增删改查后的新数据 数组形式
+     */
+    SET_HISTORIES(state, histories) {
+      state.histories = histories
     }
   },
   actions: {},
